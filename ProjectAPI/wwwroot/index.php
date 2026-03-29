@@ -46,6 +46,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_product'])) {
     }
 }
 
+// Handle purchases
+$purchaseMessage = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['purchase'])) {
+    if (!isset($_SESSION['user_id'])) {
+        $purchaseMessage = 'You must be logged in to purchase.';
+    } else {
+        $productId = intval($_POST['product_id'] ?? 0);
+        $quantity = intval($_POST['quantity'] ?? 0);
+
+        $stmt = $conn->prepare("SELECT Inventory FROM products WHERE id = ?");
+        $stmt->execute([$productId]);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$product) {
+            $purchaseMessage = 'Product not found.';
+        } elseif ($quantity < 1) {
+            $purchaseMessage = 'Quantity must be at least 1.';
+        } elseif ($quantity > $product['Inventory']) {
+            $purchaseMessage = 'Cannot purchase more than available stock.';
+        } else {
+            // Insert purchase
+            $stmt = $conn->prepare("INSERT INTO purchases (user_id, product_id, quantity) VALUES (?, ?, ?)");
+            $stmt->execute([$_SESSION['user_id'], $productId, $quantity]);
+
+            // Update inventory
+            $stmt = $conn->prepare("UPDATE products SET Inventory = Inventory - ? WHERE id = ?");
+            $stmt->execute([$quantity, $productId]);
+
+            $purchaseMessage = 'Purchase successful!';
+        }
+    }
+}
+
 // Load products
 $products = $conn->query("SELECT * FROM products ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -60,34 +93,48 @@ $products = $conn->query("SELECT * FROM products ORDER BY id DESC")->fetchAll(PD
 
 <?php if (!isset($_SESSION['user_id'])): ?>
     <h2>Login</h2>
-    <form method="POST">
+    <form id="login-form" method="POST">
         <input type="hidden" name="login" value="1">
         <label>Email: <input type="email" name="email" required></label><br>
         <label>Password: <input type="password" name="password" required></label><br>
         <button type="submit">Login</button>
     </form>
-    <?php if ($loginMessage) echo "<p>$loginMessage</p>"; ?>
+    <?php if ($loginMessage) echo "<p id='login-message'>$loginMessage</p>"; ?>
 <?php else: ?>
-    <p>Logged in as user ID: <?php echo $_SESSION['user_id']; ?> 
+    <p id="logged-in-message">Logged in as user ID: <?php echo $_SESSION['user_id']; ?> 
     <a href="?logout=1">Logout</a></p>
 
     <h2>Create a Product</h2>
-    <form method="POST">
+    <form id="create-product-form" method="POST">
         <input type="hidden" name="create_product" value="1">
         <label>Name: <input type="text" name="product_name" required></label><br>
         <label>Price: <input type="number" name="product_price" required></label><br>
         <label>Inventory: <input type="number" name="product_inventory" required></label><br>
         <button type="submit">Create Product</button>
     </form>
-    <?php if ($productMessage) echo "<p>$productMessage</p>"; ?>
+    <?php if ($productMessage) echo "<p id='confirmation-message'>$productMessage</p>"; ?>
+
+    <h2>Purchase a Product</h2>
+    <form id="purchase-form" method="POST">
+        <label>Quantity:
+            <input type="number" name="quantity" value="1" min="1" required>
+        </label>
+        <input type="hidden" name="product_id" id="purchase-product-id">
+        <input type="hidden" name="purchase" value="1">
+        <button type="submit">Purchase</button>
+    </form>
+    <p id="purchase-message"><?php if ($purchaseMessage) echo htmlspecialchars($purchaseMessage); ?></p>
 <?php endif; ?>
 
 <h1>Products:</h1>
-<ul>
+<ul id="products-list">
     <?php foreach ($products as $p): ?>
-        <li><?php echo htmlspecialchars($p['Name']); ?> - $<?php echo $p['Price']; ?> - Stock: <?php echo $p['Inventory']; ?></li>
+        <li data-id="<?php echo $p['id']; ?>">
+            <?php echo htmlspecialchars($p['Name']); ?> - $<?php echo $p['Price']; ?> - Stock: <?php echo $p['Inventory']; ?>
+        </li>
     <?php endforeach; ?>
 </ul>
 
+<script src="index.js"></script>
 </body>
 </html>
