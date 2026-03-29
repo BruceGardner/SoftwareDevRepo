@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\doggo\\OneDrive\\Documents\\GitHub\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj": {}
+    "C:\\xampp\\htdocs\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\doggo\\OneDrive\\Documents\\GitHub\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj": {
+    "C:\\xampp\\htdocs\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\doggo\\OneDrive\\Documents\\GitHub\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj",
+        "projectUniqueName": "C:\\xampp\\htdocs\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj",
         "projectName": "ProjectAPI",
-        "projectPath": "C:\\Users\\doggo\\OneDrive\\Documents\\GitHub\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj",
+        "projectPath": "C:\\xampp\\htdocs\\SoftwareDevRepo\\ProjectAPI\\ProjectAPI.csproj",
         "packagesPath": "C:\\Users\\doggo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\doggo\\OneDrive\\Documents\\GitHub\\SoftwareDevRepo\\ProjectAPI\\obj\\",
+        "outputPath": "C:\\xampp\\htdocs\\SoftwareDevRepo\\ProjectAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\doggo\\AppData\\Roaming\\NuGet\\NuGet.Config"
